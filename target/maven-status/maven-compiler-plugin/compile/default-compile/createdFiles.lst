@@ -1,0 +1,14 @@
+com\rinswiftwings\autobuyermod\ModLog.class
+com\rinswiftwings\autobuyermod\newComp.class
+com\rinswiftwings\autobuyermod\AspectHelper.class
+com\rinswiftwings\autobuyermod\AutoBuyerCore$ShipPriority.class
+com\rinswiftwings\autobuyermod\AutoBuyerConfig.class
+com\rinswiftwings\autobuyermod\AutoBuyerConfig$1.class
+com\rinswiftwings\autobuyermod\AutoBuyerCore$ShipState.class
+com\rinswiftwings\autobuyermod\guiAspect.class
+com\rinswiftwings\autobuyermod\AutoBuyerCore$ItemOffer.class
+com\rinswiftwings\autobuyermod\AutoBuyerAspect.class
+com\rinswiftwings\autobuyermod\outlineAspect.class
+com\rinswiftwings\autobuyermod\AutoBuyerCore.class
+com\rinswiftwings\autobuyermod\storageGuiAspect.class
+com\rinswiftwings\autobuyermod\AutoBuyerCore$1.class

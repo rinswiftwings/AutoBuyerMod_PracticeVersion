@@ -1,0 +1,163 @@
+<mod>
+	<name>Auto-Buyer Mod</name>
+	<author>Rin</author>
+	<description>
+Designed for the new station mode gameplay when station services automate outgoing resources. Automates purchasing of items from NPC ships based on configurable target stock levels using player credits. Uses event-driven logic, respects game physics/trade limits, and calculates needs based on current stock and items in transit.
+
+The mod will automatically buy items when NPC ships arrive in-sector, maintaining your station's stock levels at configured targets. Supports filtering by trade mode (Discounted/Markup), credit limits, and cooldowns.
+
+Features:
+- Multi-ship prioritization (trades with best available ship)
+- Automatic retry for new ships (up to 3 attempts before marking as unavailable)
+- User-configurable markup thresholds (buy at each price level based on stock percentage)
+- Per-ship trade limits (8 trades per ship per visit, 4 concurrent trades max)
+- Smart offer caching and refresh logic
+- 10-second initialization delay for new ships
+- Shuttle docking trigger for trade rechecks
+- Configurable logging (disabled for performance by default)
+- Support for 50+ item types including scrap materials
+- Logistics-aware trading (slows at 20 items, pauses at 40 items, cancels at 60 items)
+- Config presets support - save and load multiple configuration profiles
+
+Configuration Presets:
+- Presets are stored in: [Game Directory]/mods/AutoBuyerMod/presets/
+- A sample preset "EarlyGame.json" is included - copy it and edit to create your own custom presets
+- To use a preset, set {config_preset} in this file to the preset name (without .json extension)
+- You can create multiple presets for different playstyles (early game, late game, scrap focus, etc.)
+- Presets can be shared with other players - just copy the .json file to their presets directory
+- See presets/README.md for detailed instructions
+
+Configuration Options:
+- {item}: Target stock level - buy if stock falls below this (e.g., {food_root_vegetables})
+- Buy Markup Thresholds (percentage of target stock - only buy if stock is below threshold):
+  - {discount_buy_threshold}: Buy Discounted items if stock &lt; this % of target. Default: 100 (always buy if under target)
+  - {normal_buy_threshold}: Buy Normal items if stock &lt; this % of target. Default: 70
+  - {markup_buy_threshold}: Buy Markup items if stock &lt; this % of target. Default: 40
+  - {premium_buy_threshold}: Buy Premium items if stock &lt; this % of target. Default: 20
+- {allow_markup}: DEPRECATED - Use {markup_buy_threshold} instead. Kept for backward compatibility only.
+- {max_credits_per_trade}: Maximum credits per trade. Set to 0 for unlimited. Default: 2000
+- {min_credit_balance}: Minimum credit balance required to initiate trades. No trades if credits are at or below this amount. Default: 10000
+- {cooldown_ticks}: Cooldown between trade attempts per ship in game ticks. 120 ticks = ~2 seconds. Set to 0 to disable. Default: 120
+- {enable_logging}: Enable logging to file for debugging (true/false). Logs saved to [Game Directory]/mods/AutoBuyerMod/logs/. Format: AutoBuyerMod_YYYY-MM-DD_HH-MM-SS.log. Default: false (disabled for better performance)
+- {config_preset}: Preset name to load (optional). Leave empty to use values from this file. Set to preset name (without .json) to load from preset file. Presets stored in [Game Directory]/mods/AutoBuyerMod/presets/. Copy and edit existing presets to create your own.
+
+For Beta 2 (0.21.0) - Experimental Branch
+	</description>
+	<minimumLoaderVersion>0.11.0</minimumLoaderVersion>
+	<gameVersions>
+		<v>0.21.0</v>
+	</gameVersions>
+	<config>
+		
+		<var default="===============" value="===============" name="{Separator}">===========================================================================================</var>
+		<var default="===============" value="===============" name="{Separator}">Food</var>
+		
+		<var value="30" default="30" name="{food_root_vegetables}">Root Vegetables - Target Stock</var>
+		<var value="30" default="30" name="{food_fruits}">Fruits - Target Stock</var>
+		<var value="30" default="30" name="{food_nuts_seeds}">Nuts and Seeds - Target Stock</var>
+		<var value="30" default="30" name="{food_artificial_meat}">Artificial Meat - Target Stock</var>
+		<var value="20" default="20" name="{food_grains_hops}">Grains and Hops - Target Stock</var>
+		<var value="10" default="10" name="{food_monster_meat}">Monster Meat - Target Stock</var>
+		<var value="30" default="30" name="{food_processed}">Processed Food - Target Stock</var>
+		<var value="15" default="15" name="{food_space_food}">Space Food - Target Stock</var>
+		<var value="15" default="15" name="{food_beer}">Beer - Target Stock</var>
+		
+		<var default="===============" value="===============" name="{Separator}">===========================================================================================</var>
+		<var default="===============" value="===============" name="{Separator}">Materials</var>
+		
+		<var value="50" default="50" name="{material_fibers}">Fibers - Target Stock</var>
+		<var value="50" default="50" name="{material_carbon}">Carbon - Target Stock</var>
+		<var value="30" default="30" name="{material_raw_chemicals}">Raw Chemicals - Target Stock</var>
+		<var value="30" default="30" name="{material_fabrics}">Fabrics - Target Stock</var>
+		<var value="30" default="30" name="{material_chemicals}">Chemicals - Target Stock</var>
+		<var value="30" default="30" name="{material_plastics}">Plastics - Target Stock</var>		
+		
+		<var default="===============" value="===============" name="{Separator}">===========================================================================================</var>
+		<var default="===============" value="===============" name="{Separator}">Metals &amp; Ores</var>
+		
+		<var value="30" default="30" name="{ore_basic}">Basic Ore - Target Stock</var>
+		<var value="30" default="30" name="{ore_exotic}">Exotic Ore - Target Stock</var>
+		<var value="50" default="50" name="{metal_basic}">Basic Metals - Target Stock</var>
+		<var value="50" default="50" name="{metal_noble}">Noble Metals - Target Stock</var>
+		<var value="30" default="30" name="{block_steel_plates}">Steel Plates - Target Stock</var>
+		
+		<var default="===============" value="===============" name="{Separator}">===========================================================================================</var>
+		<var default="===============" value="===============" name="{Separator}">Energy &amp; Fuel</var>
+		
+		<var value="30" default="30" name="{energy_energium}">Energium - Target Stock</var>
+		<var value="30" default="30" name="{energy_hyperium}">Hyperium - Target Stock</var>
+		<var value="30" default="30" name="{energy_rod}">Energy Rod - Target Stock</var>
+		<var value="20" default="20" name="{energy_cell}">Energy Cell - Target Stock</var>
+		<var value="30" default="30" name="{fuel_hyperfuel}">Hyperfuel - Target Stock</var>
+		
+		<var default="===============" value="===============" name="{Separator}">===========================================================================================</var>
+		<var default="===============" value="===============" name="{Separator}">Components</var>
+		
+		<var value="20" default="20" name="{component_electronic}">Electronic Component - Target Stock</var>
+		<var value="20" default="20" name="{component_optronics}">Optronics Component - Target Stock</var>
+		<var value="15" default="15" name="{component_quantronics}">Quantronics Component - Target Stock</var>
+				
+		<var default="===============" value="===============" name="{Separator}">===========================================================================================</var>
+		<var default="===============" value="===============" name="{Separator}">Medical</var>
+		
+		<var value="20" default="20" name="{medical_supplies}">Medical Supplies - Target Stock</var>
+		<var value="20" default="20" name="{medical_iv_fluid}">IV Fluid - Target Stock</var>
+		<var value="10" default="10" name="{medical_painkillers}">Painkillers - Target Stock</var>
+		<var value="10" default="10" name="{medical_combat_stimulant}">Combat Stimulant - Target Stock</var>
+		<var value="10" default="10" name="{medical_bandage}">Bandage - Target Stock</var>
+		<var value="10" default="10" name="{medical_nano_dressing}">Nano Wound Dressing - Target Stock</var>
+		
+		
+		<var default="===============" value="===============" name="{Separator}">===========================================================================================</var>
+		<var default="===============" value="===============" name="{Separator}">Resources</var>
+		
+		<var value="40" default="40" name="{ice_block}">Ice Block - Target Stock</var>
+		<var value="60" default="60" name="{water}">Water - Target Stock</var>		
+		
+		<var default="===============" value="===============" name="{Separator}">===========================================================================================</var>
+		<var default="===============" value="===============" name="{Separator}">Botany</var>
+		
+		<var value="30" default="30" name="{botany_biomass}">Biomass - Target Stock</var>
+		<var value="20" default="20" name="{botany_fertilizer}">Fertilizer - Target Stock</var>		
+		
+		<var default="===============" value="===============" name="{Separator}">===========================================================================================</var>
+		<var default="===============" value="===============" name="{Separator}">Scrap</var>
+		
+		<var value="30" default="30" name="{scrap_rubble}">Rubble - Target Stock</var>
+		<var value="30" default="30" name="{scrap_hull}">Hull Scrap - Target Stock</var>
+		<var value="30" default="30" name="{scrap_infra}">Infra Scrap - Target Stock</var>
+		<var value="30" default="30" name="{scrap_soft}">Soft Scrap - Target Stock</var>
+		<var value="30" default="30" name="{scrap_tech}">Tech Scrap - Target Stock</var>
+		<var value="30" default="30" name="{scrap_energy}">Energy Scrap - Target Stock</var>
+		
+		
+		<var default="===============" value="===============" name="{Separator}">===========================================================================================</var>
+		<var default="===============" value="===============" name="{Separator}">Blocks</var>
+		
+		<var value="30" default="30" name="{block_hull}">Hull Block - Target Stock</var>
+		<var value="30" default="30" name="{block_infra}">Infra Block - Target Stock</var>
+		<var value="30" default="30" name="{block_soft}">Soft Block - Target Stock</var>
+		<var value="30" default="30" name="{block_tech}">Tech Block - Target Stock</var>
+		<var value="30" default="30" name="{block_energy}">Energy Block - Target Stock</var>
+		<var value="15" default="15" name="{block_super}">Super Block - Target Stock</var>
+		
+		<var default="===============" value="===============" name="{Separator}">===========================================================================================</var>
+		<var default="===============" value="===============" name="{Separator}">Buy Markup Thresholds</var>
+		
+		<var value="100" default="100" name="{discount_buy_threshold}">Buy Discounted Items Threshold (% of target stock, 100 = always buy if under target)</var>
+		<var value="70" default="70" name="{normal_buy_threshold}">Buy Normal Items Threshold (% of target stock, only buy if stock below this %)</var>
+		<var value="40" default="40" name="{markup_buy_threshold}">Buy Markup Items Threshold (% of target stock, only buy if stock below this %)</var>
+		<var value="20" default="20" name="{premium_buy_threshold}">Buy Premium Items Threshold (% of target stock, only buy if stock below this %)</var>
+		
+		<var default="===============" value="===============" name="{Separator}">===========================================================================================</var>
+		<var default="===============" value="===============" name="{Separator}">Mod Settings</var>
+		
+		<var value="4000" default="4000" name="{max_credits_per_trade}">Max Credits Per Trade (0 = unlimited)</var>
+		<var value="5000" default="5000" name="{min_credit_balance}">Min Credit Balance (no trades if credits at or below this)</var>
+		<var value="120" default="120" name="{cooldown_ticks}">Cooldown Ticks (120 = ~2 seconds, 0 = disabled)</var>
+		<var value="false" default="false" name="{enable_logging}">Enable Logging</var>
+		<var value="" default="" name="{config_preset}">Config Preset (optional, leave empty to use values above)</var>
+				
+	</config>
+	<version>0.1.7</version>
+</mod>

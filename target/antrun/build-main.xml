@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="maven-antrun-" default="main">
+  <target name="main">
+    <mkdir dir="C:\Users\Admin\SpaceHavenModding\mods\AutoBuyerMod/mod_output/presets" />
+    <mkdir dir="C:\Users\Admin\SpaceHavenModding\mods\AutoBuyerMod/mod_output/logs" />
+    <copy file="C:\Users\Admin\SpaceHavenModding\mods\AutoBuyerMod/info.xml" tofile="C:\Users\Admin\SpaceHavenModding\mods\AutoBuyerMod/mod_output/info.xml" overwrite="true" />
+    <copy file="C:\Users\Admin\SpaceHavenModding\mods\AutoBuyerMod\target/AutoBuyerMod_0.1.7.jar" tofile="C:\Users\Admin\SpaceHavenModding\mods\AutoBuyerMod/mod_output/AutoBuyerMod_0.1.7.jar" overwrite="true" />
+    <copy todir="C:\Users\Admin\SpaceHavenModding\mods\AutoBuyerMod/mod_output/presets" overwrite="true">
+      <fileset dir="C:\Users\Admin\SpaceHavenModding\mods\AutoBuyerMod/presets" />
+    </copy>
+  </target>
+</project>
