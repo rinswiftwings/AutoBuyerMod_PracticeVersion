@@ -1,0 +1,44 @@
+# Maven build output
+target/
+
+# Compiled JAR files (users should build themselves)
+*.jar
+!presets/*.jar
+
+# Log files
+*.log
+logs/
+testing_logs/
+mod_output/logs/
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.bak
+*.backup
+
+# Build artifacts in mod_output (keep structure, ignore compiled JAR)
+mod_output/*.jar
+
+# Keep mod_output structure but ignore logs
+!mod_output/presets/
+!mod_output/info.xml
+!mod_output/README.md
+

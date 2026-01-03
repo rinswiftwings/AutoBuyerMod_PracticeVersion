@@ -102,10 +102,15 @@ Java source code directory. Organized by package:
 See **01_Getting_Started.md** for detailed package naming instructions.
 
 **Main Classes:**
-- **AutoBuyerAspect.java**: AspectJ aspect class with `@Aspect` annotation. Contains hooks into game events.
+- **AutoBuyerAspect.java**: AspectJ aspect class with `@Aspect` annotation. Contains hooks into game events for core trading functionality.
 - **AutoBuyerCore.java**: Core business logic. Handles trade creation, ship state management, priority scoring.
 - **AutoBuyerConfig.java**: Configuration management. Loads from `info.xml`, handles presets, stores settings.
 - **ModLog.java**: Logging utility. Handles file logging, diagnostic output, log file creation.
+
+**Additional UI Enhancement Aspects (Optional):**
+- **outlineAspect.java**: Always shows character outlines (visual enhancement, not required for trading)
+- **storageGuiAspect.java**: Adds storage usage info to ship tooltips (UI enhancement, not required for trading)
+- **guiAspect.java**: DISABLED - Was interfering with crew name-based sorting (kept for reference)
 
 ### src/main/resources/META-INF/aop.xml
 
@@ -118,7 +123,11 @@ AspectJ configuration file. Defines:
 ```xml
 <aspectj>
     <aspects>
-        <!-- ⚠️ IMPORTANT: Replace with YOUR unique package name! -->
+        <!-- Core trading aspects -->
+        <aspect name="com.rinswiftwings.autobuyermod.outlineAspect" />
+        <!-- DISABLED: guiAspect was interfering with crew name-based sorting -->
+        <!-- <aspect name="com.rinswiftwings.autobuyermod.guiAspect" /> -->
+        <aspect name="com.rinswiftwings.autobuyermod.storageGuiAspect" />
         <aspect name="com.rinswiftwings.autobuyermod.AutoBuyerAspect"/>
     </aspects>
     <weaver options="-verbose -showWeaveInfo">
@@ -128,6 +137,8 @@ AspectJ configuration file. Defines:
     </weaver>
 </aspectj>
 ```
+
+**Note:** The `outlineAspect` and `storageGuiAspect` are optional UI enhancements. Only `AutoBuyerAspect` is required for core trading functionality. The `guiAspect` is disabled and kept for reference.
 
 **⚠️ IMPORTANT:** When creating your own mod, replace `com.rinswiftwings` with your own unique package name (e.g., `com.yourname`).
 

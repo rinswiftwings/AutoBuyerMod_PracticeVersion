@@ -4,7 +4,7 @@ This reference guide documents all AspectJ hooks used in AutoBuyerMod, explainin
 
 ## Hook Overview
 
-AutoBuyerMod uses **6 AspectJ hooks** to intercept game events:
+AutoBuyerMod uses **6 AspectJ hooks** in `AutoBuyerAspect` to intercept game events for core trading functionality:
 
 1. **Trade Completion Hook** - Detects when trades finish
 2. **Trade Cancellation Hook** - Detects when trades are cancelled
@@ -12,6 +12,16 @@ AutoBuyerMod uses **6 AspectJ hooks** to intercept game events:
 4. **Ship Added Hook** - Detects when new ships arrive
 5. **Entity Boarded Hook** - Detects when NPC shuttles dock
 6. **Logistics Swamped Hook** - Detects when logistics get overwhelmed
+
+## Additional UI Enhancement Aspects
+
+The mod also includes **3 optional UI enhancement aspects** that are not part of the core trading functionality:
+
+- **`outlineAspect`** - Always shows character outlines (visual enhancement)
+- **`storageGuiAspect`** - Adds storage usage info to ship tooltips (UI enhancement)
+- **`guiAspect`** - DISABLED (was interfering with crew name-based sorting)
+
+These aspects are registered in `aop.xml` but are separate from the core auto-buying logic. They demonstrate additional AspectJ usage patterns for UI modifications.
 
 ## Hook 1: Trade Completion
 
