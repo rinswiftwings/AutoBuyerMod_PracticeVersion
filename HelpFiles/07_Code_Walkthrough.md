@@ -258,15 +258,19 @@ private Trading.TradeAgreement buildTradeAgreement(
         if (need <= 0) continue;
         
         // Check markup threshold
+        // This determines if we should buy at this markup level based on current stock percentage
+        // Premium items CAN be purchased if stock is below the Premium threshold (indicating dire need)
+        // Example: Premium threshold = 20% means buy Premium items only if stock < 20% of target
         double stockPercent = ((double)(current + queued) / target) * 100.0;
         int threshold = config.getBuyThreshold(offer.getTradeItemMode());
-        if (stockPercent >= threshold) continue; // Stock too high for this markup
+        if (stockPercent >= threshold) continue; // Stock too high for this markup level
         
         // Add to eligible items
         eligibleItems.add(new ItemOffer(eid, target, offer, need, avail));
     }
     
-    // Step 3: Sort by priority (Discounted > Neutral > Markup)
+    // Step 3: Sort by priority (Discounted > Neutral > Markup > Premium)
+    // Premium items have lowest priority but can still be purchased if stock is below threshold
     eligibleItems.sort((a, b) -> {
         int priorityA = getTradeModePriority(a.offer.getTradeItemMode());
         int priorityB = getTradeModePriority(b.offer.getTradeItemMode());
@@ -464,6 +468,7 @@ private ShipPriority calculateShipPriority(World world, Ship npcShip, Ship playe
         if (need <= 0) continue;
         
         // Check markup threshold
+        // Premium items are included here - they can be purchased if stock is below Premium threshold
         double stockPercent = ((double)(current + queued) / target) * 100.0;
         int threshold = config.getBuyThreshold(offer.getTradeItemMode());
         if (stockPercent >= threshold) continue;
@@ -474,11 +479,13 @@ private ShipPriority calculateShipPriority(World world, Ship npcShip, Ship playe
         }
         
         // Count dire need items (stock < 20% of target)
+        // Note: Premium items often trigger dire need since their threshold is typically 20%
         if (stockPercent < 20.0) {
             direNeedItems++;
         }
         
         // Add to total need value
+        // Premium items have priority 3 (lowest), but are still included in scoring
         int priority = getTradeModePriority(offer.getTradeItemMode());
         int value = Math.min(need, avail) * (4 - priority);
         totalNeedValue += value;

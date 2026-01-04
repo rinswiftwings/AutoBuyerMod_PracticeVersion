@@ -146,7 +146,7 @@ All code includes extensive educational comments explaining design decisions and
 
 | Variable | Description | Default | Notes |
 |----------|-------------|---------|-------|
-| `{allow_markup}` | Allow buying items with Markup trade mode | `true` | Set to `false` to only buy Discounted/Neutral items |
+| `{allow_markup}` | **DEPRECATED** - Allow buying items with Markup trade mode | `true` | Use `{markup_buy_threshold}` instead. Kept for backward compatibility only. |
 | `{max_credits_per_trade}` | Maximum credits per trade | `2000` | Set to `0` for unlimited |
 | `{min_credit_balance}` | Minimum credit balance required | `10000` | No trades if credits ≤ this amount |
 | `{cooldown_ticks}` | Cooldown between trade attempts (per ship) | `120` | 120 ticks ≈ 2 seconds. Set to `0` to disable |
@@ -321,8 +321,9 @@ The mod uses **AspectJ bytecode weaving** to intercept game events. It does not 
    - For each item in the best ship's offers:
      - Calculate need: `targetStock - (currentStock + itemsInTransit)`
      - Check if need > 0
-     - Prioritize by trade mode: Discounted > Neutral > Markup
-     - Markup items only bought if need ≤ 10% of target
+     - Check markup threshold: Only buy if stock percentage < threshold for that trade mode
+     - Prioritize by trade mode: Discounted > Neutral > Markup > Premium
+     - Premium items can be purchased if stock is below Premium threshold (default: 20% of target)
 
 4. **Trade Creation**
    - Calculate quantity (respects 10-unit cap and credit limits)

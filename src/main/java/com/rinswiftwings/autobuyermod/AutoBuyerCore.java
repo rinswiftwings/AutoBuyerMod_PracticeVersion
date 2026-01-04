@@ -649,8 +649,8 @@ public class AutoBuyerCore {
             Trading.TradeItem offer = offers.get(eid);
             if (offer == null) continue;
             
-            // Skip Premium items (not for sale)
-            if (offer.getTradeItemMode() == TradingHelper.TradeItemMode.Premium) continue;
+            // Premium items can be purchased if stock is below Premium threshold (threshold system handles this)
+            // No need to skip Premium items - let threshold check determine eligibility
             
             // Calculate need and current stock percentage
             int current = playerStation.getItemsOf(eid, true);
@@ -1373,8 +1373,8 @@ public class AutoBuyerCore {
                 Trading.TradeItem offer = offers.get(eid);
                 if (offer == null) continue;
                 
-                // Skip Premium items (not for sale)
-                if (offer.getTradeItemMode() == TradingHelper.TradeItemMode.Premium) continue;
+                // Premium items can be purchased if stock is below Premium threshold (threshold system handles this)
+                // No need to skip Premium items - let threshold check determine eligibility
                 
                 // Calculate need and current stock percentage
                 int current = playerStation.getItemsOf(eid, true);

@@ -54,13 +54,13 @@ Items can be sold at different price levels:
 - **Discounted** - Item sold at discount (best price for buyer)
 - **Neutral** - Normal price
 - **Markup** - Item sold at markup (higher price)
-- **Premium** - Item not for sale (NPC only wants to buy, not sell)
+- **Premium** - Item sold at premium price (highest price, but can be purchased if dire need)
 
 **Threshold System:**
 - Buy Discounted items if stock < 100% of target (always buy if under target)
 - Buy Normal items if stock < 70% of target
 - Buy Markup items if stock < 40% of target
-- Buy Premium items if stock < 20% of target
+- Buy Premium items if stock < 20% of target (only when dire need - stock is critically low)
 
 ### Price Calculation
 
@@ -72,7 +72,7 @@ int price = npcBank.getSellPriceToPlayer(itemId, quantity, TradeItemMode.Neutral
 **Price factors:**
 - Base item value
 - Trade item mode (Discounted/Neutral/Markup)
-- Quantity (may affect per-unit price)
+- Quantity
 - NPC's current stock levels
 
 ## World Object
@@ -347,7 +347,7 @@ score = (direNeedItems * 5000) + (discountedItems * 100) +
 ### Item Priority
 
 Items are prioritized by:
-- **Trade mode** - Discounted > Neutral > Markup
+- **Trade mode** - Discounted > Neutral > Markup > Premium (lower priority, but can be purchased if dire need)
 - **Need amount** - More need = higher priority
 - **Stock percentage** - Lower stock = higher priority
 
@@ -378,7 +378,7 @@ if (!ship.isPlayerShip() || ship.isDerelict()) {
 }
 ```
 
-### Graceful Degradation
+### Smart Retry
 
 If something fails, continue with reduced functionality:
 ```java

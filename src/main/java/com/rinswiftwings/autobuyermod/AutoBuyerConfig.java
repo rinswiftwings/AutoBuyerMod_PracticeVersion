@@ -279,7 +279,7 @@ public class AutoBuyerConfig {
          * 4. Set value if valid, log error if invalid
          * 
          * This pattern ensures:
-         * - Invalid values don't crash the mod (graceful degradation)
+         * - Invalid values don't crash the mod (smart retry)
          * - Users get feedback about invalid config (logged)
          * - Default values are used if config is invalid (safe fallback)
          * - Each threshold is independent (one bad value doesn't break others)

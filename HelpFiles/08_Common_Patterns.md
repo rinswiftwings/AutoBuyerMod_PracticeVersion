@@ -25,7 +25,7 @@ public void hook() {
 **Why:**
 - Game stability: Mods must never crash the game
 - Debugging: Logging errors helps identify issues
-- Graceful degradation: Continue with reduced functionality
+- Smart Retry: Continue with reduced functionality
 
 ### Pattern 2: Null Checking
 
